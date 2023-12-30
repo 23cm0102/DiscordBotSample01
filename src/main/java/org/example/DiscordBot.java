@@ -9,14 +9,14 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class DiscordBot extends ListenerAdapter {
     private static JDA jda = null;
-    private static final String BOT_TOKEN = "トークンを入力";
+    private static final String BOT_TOKEN = "とーくん！";
 
     public static void main(String[] args) {
         jda = JDABuilder.createDefault(BOT_TOKEN)
                 .setRawEventsEnabled(true)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .addEventListeners(new DiscordBot())
-                .setActivity(Activity.listening("死ぬな！お前の体"))
+                .setActivity(Activity.listening("私たちの関係"))
                 .build();
 
         jda.updateCommands().queue();
@@ -28,14 +28,28 @@ public class DiscordBot extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
 
+        //ユーザーから受け取ったメッセージ ex : @サンプルbotちゃん こんにちは
         String msg = event.getMessage().getContentRaw();
-        switch (msg) {
-            case "こんにちは":
-                event.getChannel().sendMessage("よー！").queue();
-                break;
-            default:
-                event.getChannel().sendMessage("まねしちゃお！w" + msg).queue();
-                break;
+
+        //botのメンションを取得 @サンプルbotちゃん
+        String botId = event.getJDA().getSelfUser().getAsMention();
+
+        //ユーザーから受け取ったメッセージがbotIdだったら処理を実行 ex : @サンプルbotちゃん　こんにちは → true
+        if (msg.startsWith(botId)) {
+
+            //ユーザーから受け取ったメッセージのbotIdを抜いて本文だけにする
+            msg = msg.replace(botId, "").trim();
+
+            //ユーザーから受け取った本文の値による分岐
+            switch (msg) {
+                case "ねえ聞いてる？":
+                    event.getChannel().sendMessage("おーん").queue();
+                    break;
+                default:
+                    event.getChannel().sendMessage("あ〜それな").queue();
+                    break;
+            }
+
         }
     }
 
